@@ -1,0 +1,977 @@
+---
+title: "Final Project"
+subtitle: "STAT 4620/5620 Winter 2025"
+format:
+  pdf:
+    documentclass: article
+    geometry: "top=2cm,bottom=2cm,left=2cm,right=2cm"
+    fontsize: 12pt
+  html:
+    toc: false
+    css: styles.css
+---
+
+\begin{titlepage}
+\begin{center}
+\vspace*{3cm}
+
+{\Huge \textbf{Final Project}}
+
+\vspace{1.5cm}
+
+{\Large STAT 4620/5620 Winter 2025}
+
+\vspace{2.5cm}
+
+{\LARGE \textbf{Title:} \\[0.5cm]
+\textit{Understanding Commuting in Halifax: A Study on Work Duration and Mode Choice}}
+
+\vspace{2.5cm}
+
+{\Large \textbf{Group Members:} \\
+Member 1: Md. Rifat Hossain Bhuiyan \\ 
+Member 2: Niaz Mahmud \\ 
+Member 3: Azam Khan}
+
+\vspace{1.5cm}
+
+{\Large \textbf{GitHub Repository:} \\[0.3cm]
+\url{https://github.com/Rifat1633/STAT-Final.git}}
+
+\vspace*{\fill}
+\end{center}
+\end{titlepage}
+
+## \thispagestyle{plain}
+
+# Abstract
+
+This research investigates how sociodemographic, built-environment, and activity-time use factors influence daily work duration and commute mode choice. Using data from the 2022 Halifax Travel Activity (HaliTRAC) Survey, various statistical models, including Ordinary Least Squares (OLS) regression, Generalized Linear Models (GLM), Iteratively Reweighted Least Squares (IRLS) regression, and Multinomial Logistic Regression (MNL), were applied to explore the effects of factors such as age, gender, income, vehicle ownership, and commute distance. The findings reveal that higher income, vehicle ownership, and age are associated with longer work durations and increased use of personal vehicles, while lower income and lack of a driving license lead to greater reliance on public transit. Additionally, non-work activities like chores and recreation are negatively correlated with work hours. The built environment, including proximity to central business districts and other essential services, also influences transportation choices. These results highlight the importance of considering sociodemographic and environmental factors in transportation planning and policy, suggesting that promoting flexible work hours, improving public transit access, and enhancing urban infrastructure can lead to more efficient and equitable transportation systems.
+
+**Keywords**: Work duration, mode choice, regression model, socio-economic factors.
+
+\newpage
+
+# 1. Introduction
+
+Understanding the factors influencing daily work duration and transportation mode choice is crucial in the context of urban transportation planning and policy formulation. As cities grow and become more complex, the demand for efficient transportation systems that accommodate diverse travel behaviors and work patterns becomes even more pressing. Work trips are central to urban transportation studies, as they often determine the characteristics of peak and off-peak traffic flows, influencing the overall design and efficiency of urban transport networks. By analyzing the role of sociodemographic factors, commute distances, and built environment characteristics, this research seeks to unravel the intricate relationships that shape work duration and transportation mode choice.
+
+Sociodemographic factors, including age, gender, income, and employment status, play a significant role in determining how individuals allocate their time to work and other activities. Age, for instance, can influence an individual's work habits, with younger individuals potentially engaging in part-time work or varying job patterns, while older individuals might have more stable, full-time employment. Gender disparities in work hours have also been studied, with research suggesting that women often have different work-time patterns due to household responsibilities (Hochschild & Machung, 2012). Income level further impacts work duration, as higher-income individuals often have more flexible working hours, whereas lower-income individuals might work longer hours due to economic necessity (Wachter, 2020). Employment status, such as whether one is employed full-time, part-time, or self-employed, naturally dictates the number of hours spent on work-related activities, influencing the overall work duration (Fan et al., 2015).
+
+Understanding these factors is essential for transportation planners as they directly affect demand for travel during peak periods. For example, those with longer working hours or specific schedules (e.g., shift workers) may contribute to traffic congestion during non-traditional work hours, necessitating different transportation infrastructure to address these needs (Graham & Glaister, 2004).
+
+Transportation mode choice on the other hand is influenced by a variety of factors, including sociodemographic characteristics, the distance to work, workplace location, and the surrounding built environment. Commute distance is a well-established determinant of mode choice, with longer distances often leading to a preference for private vehicles, while shorter distances may encourage the use of public transport or active modes like walking and cycling (Givoni & Rietveld, 2014). The built environment, including the availability of infrastructure such as public transit, bike lanes, and pedestrian-friendly areas, also plays a pivotal role in shaping transportation behavior. In urban areas where public transportation is easily accessible, individuals may be more inclined to use transit as a mode of commuting. On the other hand, in car-dependent cities, individuals may have limited public transportation options, making personal vehicles the more practical choice (Cervero & Kockelman, 1997).
+
+Sociodemographic factors like income and employment status influence these choices as well. Higher-income individuals are more likely to own private vehicles, while lower-income individuals might rely more on public transit due to financial constraints. Additionally, the workplace's location relative to residential areas can affect mode choice. For example, individuals who work in central business districts (CBDs) with robust public transit systems may prefer transit, whereas those working in suburban or rural areas with limited public transport may opt for private vehicles (Boarnet & Crane, 2001).
+
+From a policy perspective, understanding the relationships between work duration, mode choice, and sociodemographic factors helps to create more equitable and efficient transportation systems. This research builds on prior literature to explore the relationship between sociodemographic, activity-related, and built environment factors and daily work duration. Additionally, the study examines how factors such as income, commute distance, and the built environment influence commute mode choice. The goal is to answer two key research questions: how sociodemographic factors affect daily work hours, and how various factors impact the choice of commute mode.
+
+# 2. Data Description
+
+This research uses data from the 2022 Halifax Travel Activity (HaliTRAC) Survey, collected by the Dalhousie Transportation Collaboratory (DalTRAC) in partnership with the Halifax Regional Municipality (HRM). The survey includes detailed information on sociodemographic factors, travel behaviors, employment status, work duration, commuting patterns, and mode choice. undefinedThe dataset comprises 3,731 households, covering 5,095 individuals, with 14,327 recorded activities over a 24-hour period. Key variables include age, gender, income, employment status, work duration, vehicle ownership, commute distance, and work arrangements.
+
+This research primarily utilizes responses from the workers who allocate a significant portion of their time to work-related activities. A total of 1509 independent responses were utilized for the work duration model and 944 responses were utilized for the commute mode choice model. The raw data as well as the data interpretation files have been made available in the following github directory: [Data Directory](https://github.com/Rifat1633/STAT-Final/blob/main/Workdata.xlsx)
+
+Figure titled **Distribution of WDUR** demonstrates the frequency of work duration across the responses, which varies between 0 to 15 hours per day.
+
+![](images/workhist.png)
+
+On the other hand, the figure below demonstrates the distribution of **Commute Mode** observed in the dataset.
+
+![](images/clipboard-1486322211.png){fig-align="center"}
+
+The commute mode choice shows very high share of auto mode (personal vehicle), followed by active modes (walking/cycling), and transit.
+
+The survey data used in this research incorporates a comprehensive set of predictor variables spanning **demographic, built environment, and activity time-use factors** to explore work duration and commute mode choice behavior. **Demographic factors** include **Age, Gender, Employment status, Education level, Income level, Driving License, Transit Pass, Vehicle ownership, Home ownership, and presence of Children**. **Built environment** variables cover accessibility to **Nearest restaurants, malls, schools, CBD, grocery stores, and the Land use index**. **Activity time-use** predictors account for time spent on **In-Home activities, Chores, Personal business, Recreation, Other activities, and the number of Trips made**. These variables collectively provide valuable insights into the factors influencing both work duration and decisions regarding the choice of commute modes.
+
+![](images/halitrac%20households%20(1).png)
+
+The figure above demonstrates the locations of the survey respondents. Using **Near Analysis** in ArcGIS, various built environment features such as the nearest restaurants, schools, malls, and grocery stores to the respondents' dwellings were calculated. The data obtained from this GIS analysis was then used to create several built environment variables, which were incorporated into the work duration and mode choice models.
+
+The Table presented below demonstrates the descriptive statistics of the survey data:
+
+```{r, warning=FALSE, echo=FALSE}
+# Load the necessary libraries
+library(readr)  # For reading CSV files
+library(knitr)  # For rendering tables
+library(dplyr)  # For data manipulation
+
+# Load the data from the CSV file, treating empty cells as blank (not NA) and suppressing column type message
+data <- read_csv("C:/Onedrive_Sync/OneDrive - Dalhousie University/PhD Dal/Coursework/Data Analysis/Project/Analysis Files/continuous_summary.csv", na = "", show_col_types = FALSE)
+
+# Replace any NA values with empty strings
+data_clean <- data %>% mutate(across(everything(), ~replace(., is.na(.), "")))
+
+# Display the table
+kable(data_clean, caption = "Descriptive Statistics of the Data", format = "markdown")
+
+
+```
+
+# 3. Methods
+
+A series of statistical models were developed to assess the impact of various socioeconomic, demographic, built-environment, and activity-time use factors on daily work duration and commute mode choice. The methodological framework for these models is outlined below.
+
+## 3.1 Ordinary Least Square Regression Model
+
+The **Ordinary Least Squares (OLS) Regression Model** is a statistical method used to model the relationship between a dependent variable and one or more independent variables. The model assumes that the relationship between the variables is linear. In the equation:
+
+$$
+Y = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \dots + \beta_p X_p + \epsilon
+$$
+
+Where,
+
+$Y$ is the dependent variable (e.g., daily work duration).
+
+$\beta_0$ is the intercept.
+
+$\beta_1, \beta_2, \dots, \beta_p$ are the coefficients for the predictor variables (e.g., socio-economic, demographic factors).
+
+$X_1, X_2, \dots, X_p$ are the independent variables (e.g., age, gender, education).
+
+$\epsilon$ is the error term or residual.
+
+## 3.2 Generalized Linear Model (GLM)
+
+The **Generalized Linear Model (GLM)** is an extension of the traditional linear regression model that allows for the dependent variable to follow a distribution other than the normal distribution.
+
+$$
+g(\mu) = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \dots + \beta_p X_p
+$$
+
+Where,
+
+$Y$ is the dependent variable.
+
+$g(\mu)$ is the link function that relates the mean of the dependent variable to the linear predictors.
+
+$X_1, X_2, \dots, X_p$ are the independent variables.
+
+$\beta_0$ is the intercept, and $\beta_1, \beta_2, \dots, \beta_p$ are the coefficients of the independent variables.
+
+GLM allows for flexibility in modeling different types of outcome variables by changing the link function and the distribution of the dependent variable.
+
+## 3.3 Iteratively Reweighted Least Squares (IRLS)
+
+**Iteratively Reweighted Least Squares (IRLS)** is an iterative algorithm used for fitting generalized linear models (GLMs), especially when the model includes a non-normal distribution or when using robust regression methods. IRLS is particularly useful for handling cases with heteroscedasticity or when the data contain outliers. The algorithm iteratively reweights the data to minimize the residual sum of squares and improve model fit by adjusting weights at each iteration. The process continues until convergence criteria are met, i.e., when changes in the coefficients are sufficiently small.
+
+$$
+\boldsymbol{\beta}^{(t+1)} = (\mathbf{X}^T W^{(t)} \mathbf{X})^{-1} \mathbf{X}^T W^{(t)} \mathbf{y}
+$$
+
+$\boldsymbol{\beta}^{(t+1)}$: The coefficients at the next iteration of IRLS.
+
+$\mathbf{X}$: The matrix of predictor variables (independent variables).
+
+$W^{(t)}$: The diagonal weight matrix at iteration $t$, where the weights are updated based on the residuals from the previous iteration.
+
+$\mathbf{y}$: The vector of observed values (dependent variable).
+
+$\mathbf{X}^T$: The transpose of the matrix $\mathbf{X}$.
+
+In each iteration, the model is updated with new weights based on the residuals from the previous iteration. The weights are typically computed using a robust function such as Huber’s loss or the Tukey’s bisquare. The process repeats until the coefficients converge, providing a robust solution to the regression problem.
+
+## 3.4 Multinomial Logistic Regression (MNL)
+
+**Multinomial Logistic Regression (MNL)** is an extension of binary logistic regression to handle situations where the dependent variable has more than two categories. MNL models the relationship between a set of independent variables and a categorical dependent variable with more than two levels. It estimates the probabilities of each category relative to a reference category by fitting multiple binary logistic regressions, one for each comparison between the reference category and the other categories.
+
+$$
+\log \left( \frac{P(Y = j)}{P(Y = 0)} \right) = \beta_0^j + \beta_1^j X_1 + \beta_2^j X_2 + \dots + \beta_p^j X_p \quad \text{for} \quad j = 1, 2, \dots, J-1
+$$
+
+$P(Y = j)$: The probability of observing category $j$ of the dependent variable.
+
+$P(Y = 0)$: The probability of observing the reference category (usually the first category).
+
+$\beta_0^j$: The intercept term for the $j$**-th** category.
+
+$\beta_1^j, \beta_2^j, \dots, \beta_p^j$: The coefficients for the independent variables $X_1, X_2, \dots, X_p$ for the $j$**-th** category.
+
+$X_1, X_2, \dots, X_p$: The predictor variables (independent variables).
+
+$j$: The index for the categories (other than the reference category).
+
+The model compares each category to the reference category (usually the first one) using a set of linear equations. The log-odds of each category relative to the reference category are modeled as a linear function of the predictors.
+
+# 4. Analysis
+
+This data analysis phase of the research project aims to address the two research questions outlined in the introduction:
+
+1.  How do sociodemographic factors (such as age, gender, income, and car ownership) influence daily work hours?
+
+2.  How do factors like income, commute distance, and the built environment affect commute mode choice?
+
+To answer these questions, several statistical models have been developed. The model formulation, R code, outputs, and fit statistics are presented in the following sections. For the first research question, we develop three models: an Ordinary Least Squares (OLS) Regression, a Generalized Linear Model (GLM), and an Iteratively Reweighted Least Squares (IRLS) Regression. In these models, daily work duration (in hours) is the response variable, estimated based on a range of sociodemographic and built-environment factors as predictor variables.
+
+To address the second research question, a Multinomial Logistic Regression (MNL) model is employed to explore how demographic and built-environment factors influence the choice of commute mode, including auto, transit, and active modes (e.g., walking or cycling).
+
+## 4.1 Work Duration (OLS Regression Model)
+
+This model dddddd
+
+```{r}
+#| echo: true
+#| warning: false
+#| message: false
+#| fig-align: center
+
+# Load necessary libraries
+library(readxl)
+library(dplyr)
+library(car)
+
+# Load the data
+data <- read_excel("C:/Onedrive_Sync/OneDrive - Dalhousie University/PhD Dal/Coursework/Data Analysis/Project/Analysis Files/Workdata.xlsx")
+
+# Convert categorical variables to factors
+data <- data %>%
+  mutate(across(c(Gender, AGEGROUP, EDULEVEL, EMP, INCOMELEVEL, LICENSE, TPASS, 
+                 VEHNUMLVL, BICYCLELVL, HOMEOWNER, LOCYRLVL, HHMEMLVL, HHHASCHLD, 
+                 HOMELOC, BUS5KM), as.factor))
+
+# Handle missing values
+data <- na.omit(data)
+
+# Fit initial model
+full_model <- lm(WDURHR ~ CHOREHR + RECHR + OTHERHR + HOMEHR + PBHR 
+                 + Gender + AGEGROUP + 
+                 EDULEVEL + EMP + INCOMELEVEL + LICENSE + TPASS 
+                 + VEHNUMLVL + BICYCLELVL + 
+                 HOMEOWNER + LOCYRLVL + HHMEMLVL + HHHASCHLD 
+                 + TRIPS + HOMELOC + BUS5KM + 
+                 NEARMALLKM + NEARSCHKM + NEARGROCKM 
+                 + NEARCBDKM + NEARRESTAUKM + LANDUSE, 
+               data = data)
+
+# Perform stepwise regression
+stepwise_model <- step(full_model, direction = "both", trace = 0)
+
+# Display final model results
+summary(stepwise_model)
+
+# Check multicollinearity
+vif(stepwise_model)
+
+# Diagnostic plots
+par(mfrow = c(1, 1))
+plot(stepwise_model)
+par(mfrow = c(1, 1))
+```
+
+### 4.1.1 OLS Model Fit Statistics Interpretation
+
+The model output represents a linear regression analysis of the dependent variable `WDURHR` (work duration in hours) on several predictor variables.
+
+**R-Squared and Adjusted R-Squared:** The multiple R-squared value of 0.863, and adjusted R-squared value of 0.861 suggest that over 85% of the variance of the dependent variable is explained by the independent variables included in the model.
+
+**F-statistic:** The F-statistic tests the overall significance of the model. The model shows high F-statistic value (661.9) with a very low p-value, indicating that the model is highly significant and some of the predictors are meaningful in explaining the variability in work duration.
+
+**Residual vs. Fitted:** This plot shows that while most of the residuals are randomly scattered around the horizontal line at zero, suggesting no major issue with non-linearity or heteroscedasticity. However, there is slight curvature and clustering of residuals at the upper end of the fitted values, hinting minor issue with heteroscedasticity.
+
+**Q-Q Plot:** This plot tests whether the distribution of the residuals is normal or not. The figure shows slight deviation from normalcy at the lower tail, suggesting some skewness.
+
+**Scale-Location Plot:** The funnel shape in the scale-location plot indicates mild heteroscedasticity at the higher values of the fitted data.
+
+**Residual vs Leverage Plot:** From the plot, points 16, 455 etc. seem lie far from the horizontal line and treating them as outliers may increase the overall accuracy of the mode.
+
+## 4.2 Work Duration (GLM Model)
+
+Since the OLS regression model diagnosis identified mild heteroscedasticity, and non-normal distribution of the residuals, a Generalized Linear Model (GLM) with log-link was tested. The advantages GLM model has over a LM model are-
+
+> -   **Handling Non-Normality**: A GLM with a log link is less sensitive to non-normality of the residuals compared to linear regression.
+>
+> -   **Ensuring Positive Predictions**: Unlike linear regression, which can predict negative values for a strictly positive dependent variable, the GLM with a log link ensures that all predictions are positive, which is applicable to this case.
+>
+> -   **Reducing Heteroscedasticity**: The log link can stabilize the variance in cases where the variance of the dependent variable increases with its magnitude.
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| fig-align: center
+#| 
+# Load necessary libraries
+library(readxl)  # For reading Excel files
+library(dplyr)   # For data manipulation
+library(car)     # For VIF calculation
+library(ggplot2) # For visualization
+library(MASS)    # For Stepwise Selection
+
+# Load the data
+data <- read_excel("C:/Onedrive_Sync/OneDrive - Dalhousie University/PhD Dal/Coursework/Data Analysis/Project/Analysis Files/Workdata.xlsx")
+
+# Convert categorical variables to factors
+categorical_vars <- c("Gender", "AGEGROUP", "EDULEVEL", "EMP", "INCOMELEVEL", "LICENSE", "TPASS", 
+                      "VEHNUMLVL", "BICYCLELVL", "HOMEOWNER", "LOCYRLVL", "HHMEMLVL", "HHHASCHLD", 
+                      "HOMELOC", "BUS5KM")
+
+data <- data %>%
+  mutate(across(all_of(categorical_vars), as.factor))
+
+# Handle missing values (listwise deletion)
+data <- na.omit(data)  # Remove rows with any missing values
+
+# Ensure WDURHR has only positive values before using log-link GLM
+data <- data %>% filter(WDURHR > 0)  # Remove zero or negative values
+
+# Fit the initial GLM with log link function
+glm_model <- glm(WDURHR ~ CHOREHR + RECHR + OTHERHR + HOMEHR + PBHR + Gender + AGEGROUP + 
+                   EDULEVEL + EMP + INCOMELEVEL + LICENSE + TPASS + VEHNUMLVL + BICYCLELVL + 
+                   HOMEOWNER + LOCYRLVL + HHMEMLVL + HHHASCHLD + TRIPS + HOMELOC + BUS5KM + 
+                   NEARMALLKM + NEARSCHKM + NEARGROCKM + NEARCBDKM + NEARRESTAUKM + LANDUSE, 
+                 family = gaussian(link = "log"), data = data)
+
+# Perform stepwise regression on GLM using AIC without showing each step (trace = 0)
+stepwise_glm <- step(glm_model, direction = "both", trace = 0)
+
+# Summarize the final stepwise-selected GLM model
+cat("\n=== FINAL STEPWISE-SELECTED GLM MODEL ===\n")
+summary(stepwise_glm)
+
+# Model fit statistics
+cat("\n=== MODEL FIT STATISTICS ===\n")
+
+# 1. McFadden's Pseudo R-squared
+null_model <- glm(WDURHR ~ 1, family = gaussian(link = "log"), data = data)
+mcfadden_r2 <- 1 - (logLik(stepwise_glm)/logLik(null_model))
+cat("McFadden's R-squared:", round(mcfadden_r2, 4), "\n")
+
+# 2. Adjusted McFadden's R-squared
+n <- nobs(stepwise_glm)
+k <- length(coef(stepwise_glm)) - 1
+adj_mcfadden <- 1 - ((logLik(stepwise_glm) - k)/logLik(null_model))
+cat("Adjusted McFadden's R-squared:", round(adj_mcfadden, 4), "\n")
+
+# 3. AIC and BIC
+cat("AIC:", round(AIC(stepwise_glm), 2), "\n")
+cat("BIC:", round(BIC(stepwise_glm), 2), "\n")
+
+# 4. Residual Deviance and Null Deviance
+cat("Residual Deviance:", deviance(stepwise_glm), "\n")
+cat("Null Deviance:", deviance(null_model), "\n")
+# Histogram of residuals after GLM with log link
+hist(resid(stepwise_glm), breaks = 30, main = "Histogram of Residuals (GLM with Log Link)", 
+     col = "skyblue", border = "black")
+# Residual diagnostics
+cat("\n=== RESIDUAL DIAGNOSTICS ===\n")
+par(mfrow = c(1, 1))
+plot(stepwise_glm)
+
+```
+
+### 4.2.1 GLM Model Fit Statistics
+
+**McFadden’s R-squared:** McFadden’s R-squared is a measure of how well the model fits the data, similar to the R-squared in linear regression. A value of 0.3404 means that the model explains about **34%** of the variability in the dependent variable.
+
+**AIC (Akaike Information Criterion)**: The AIC is a measure of model fit, penalized for the number of predictors in the model. A lower AIC indicates a better model. The value **3868.18** suggests a moderate fit.
+
+**BIC (Bayesian Information Criterion)**: Similar to the AIC, the BIC penalizes the model for complexity, but it applies a stronger penalty for the number of parameters. Like AIC, a lower BIC is preferred. The value **3955.73** is indicative of moderate fit.
+
+**Deviance Explained**: The deviance explained is calculated as the reduction in deviance due to the predictors in the model. A value of **0.7883** suggests that about **78.8%** of the variability in `work duration` has been explained by the predictors, which is comparatively lower than the linear model.
+
+**Model Diagnostics Plots:** The model diagnostic plots don't show any improvement over the linear model, as issues such as heteroscedasticity, non-normal residual distribution, and effect of outliers still persists.
+
+## 4.3 Work Duration (IRLS Model)
+
+**Iteratively Reweighted Least Squares (IRLS)** is an algorithm used in robust regression that iteratively adjusts weights to reduce the influence of outliers. It powers methods like M-estimation by solving weighted least squares problems where outliers receive progressively smaller weights.
+
+### Steps of Iteratively Reweighted Least Squares (IRLS):
+
+1.  **Initialize** the model using OLS (or any initial guess for the coefficients).
+
+2.  **Compute the residuals** for the current model.
+
+3.  **Calculate weights** for each residual. Typically, a **Huber weight function** is used, which applies the **absolute value loss** for large residuals and the **squared error loss** for small residuals.
+
+4.  **Re-estimate** the model using weighted least squares, using the weights computed in the previous step.
+
+5.  **Repeat** until convergence or until a maximum number of iterations is reached.
+
+Here, **IRLS (Iteratively Reweighted Least Squares)** was applied to improve on **LM (Linear Regression)** and **GLS (Generalized Least Squares)** due to the presence of **outliers** in the data that could distort model estimates. IRLS is robust to outliers, providing more reliable coefficient estimates by down-weighting extreme residuals. Additionally, it helps address **mild heteroscedasticity** by using weights that reduce the influence of data points with larger residuals, improving model stability and accuracy. The following sections contain the code and the model outputs.
+
+```{r}
+# Load necessary libraries
+library(readxl)  # For reading Excel files
+library(dplyr)   # For data manipulation
+library(MASS)    # For robust regression (rlm) and other helpers
+
+# Load the data
+data <- read_excel("C:/Onedrive_Sync/OneDrive - Dalhousie University/PhD Dal/Coursework/Data Analysis/Project/Analysis Files/Workdata.xlsx")
+
+# Check the structure of the data
+str(data)
+
+# Convert categorical variables to factors
+categorical_vars <- c("Gender", "AGEGROUP", "EDULEVEL", "EMP", "INCOMELEVEL", "LICENSE", "TPASS", 
+                      "VEHNUMLVL", "BICYCLELVL", "HOMEOWNER", "LOCYRLVL", "HHMEMLVL", "HHHASCHLD", 
+                      "HOMELOC", "BUS5KM")
+
+data <- data %>%
+  mutate(across(all_of(categorical_vars), as.factor))
+
+# Check for missing values
+colSums(is.na(data))
+
+# Handle missing values (listwise deletion)
+data <- na.omit(data)  # Remove rows with any missing values
+
+# Prepare the model formula
+model_formula <- WDURHR ~ CHOREHR + RECHR + OTHERHR + HOMEHR + PBHR + Gender + AGEGROUP + 
+  EDULEVEL + EMP + INCOMELEVEL + LICENSE + TPASS + VEHNUMLVL + BICYCLELVL + 
+  HOMEOWNER + LOCYRLVL + HHMEMLVL + HHHASCHLD + TRIPS + HOMELOC + BUS5KM + 
+  NEARMALLKM + NEARSCHKM + NEARGROCKM + NEARCBDKM + NEARRESTAUKM + LANDUSE
+
+# Initial model using ordinary least squares (OLS)
+ols_model <- lm(model_formula, data = data)
+
+# Get the initial coefficients and residuals
+coefficients_ols <- coef(ols_model)
+residuals_ols <- residuals(ols_model)
+
+# Function for Huber weighting (robust weight function)
+huber_weight <- function(residuals, k = 1.5) {
+  # Huber weight function
+  abs_resid <- abs(residuals)
+  weights <- ifelse(abs_resid <= k, 1, k / abs_resid)
+  return(weights)
+}
+
+# Maximum number of iterations for IRLS
+max_iter <- 100
+tolerance <- 1e-6
+
+# Initialize residuals and weights
+residuals_current <- residuals_ols
+weights_current <- huber_weight(residuals_current)
+
+# Start IRLS algorithm
+for (i in 1:max_iter) {
+  # Weighted least squares regression with current weights
+  weighted_model <- lm(model_formula, data = data, weights = weights_current)
+  
+  # Update coefficients and residuals
+  coefficients_current <- coef(weighted_model)
+  residuals_current <- residuals(weighted_model)
+  
+  # Calculate new weights using the Huber function
+  weights_current <- huber_weight(residuals_current)
+  
+  # Check for convergence: if the coefficients change very little, stop the iteration
+  if (sum((coefficients_current - coefficients_ols)^2) < tolerance) {
+    cat("Convergence reached at iteration", i, "\n")
+    break
+  }
+  
+  # Update the coefficients for the next iteration
+  coefficients_ols <- coefficients_current
+}
+
+# Final model summary after IRLS
+cat("\n=== Final Robust Regression (IRLS) Model Summary ===\n")
+summary(weighted_model)
+
+# Model fit statistics
+cat("\n=== MODEL FIT STATISTICS ===\n")
+# AIC and BIC for the IRLS model
+cat("AIC:", round(AIC(weighted_model), 2), "\n")
+cat("BIC:", round(BIC(weighted_model), 2), "\n")
+
+# RMSE (Root Mean Squared Error) for the IRLS model
+rmse_irls <- sqrt(mean(residuals(weighted_model)^2))
+cat("RMSE:", round(rmse_irls, 4), "\n")
+
+# MAE (Mean Absolute Error) for the IRLS model
+mae_irls <- mean(abs(residuals(weighted_model)))
+cat("MAE:", round(mae_irls, 4), "\n")
+
+# Check for multicollinearity using Variance Inflation Factor (VIF)
+cat("\n=== MULTICOLLINEARITY CHECK ===\n")
+vif_results <- car::vif(weighted_model)
+print(vif_results)
+
+# Diagnostic plots for the final IRLS model
+par(mfrow = c(1, 1))
+plot(weighted_model)
+
+```
+
+### 4.3.1 IRLS Model Fit Statistics
+
+The model fit and performance statistics suggest that the **IRLS (Iteratively Reweighted Least Squares)** model provides a robust and well-fitting solution, especially considering the presence of outliers and mild heteroscedasticity.
+
+-   **AIC (2520.07)** and **BIC (2751.82)**: These values are reasonable and suggest a good fit, considering the complexity of the model. The lower these values are, the better the model is at balancing goodness of fit with complexity.
+
+-   **RMSE (0.8792)**: The **Root Mean Squared Error** indicates that the average deviation of the predicted values from the actual values is **0.8792**. This suggests that the model's predictions are relatively accurate, with small errors on average.
+
+-   **MAE (0.4604)**: The **Mean Absolute Error** represents the average magnitude of the errors without considering their direction. A value of **0.4604** suggests that, on average, the model's predictions are off by **0.46** units, which is acceptable for most practical applications.
+
+-   **Residual Standard Error (0.6304)**: This is another measure of how well the model fits the data. The **lower** the value, the better the model fits the data. The **residual standard error** is quite low, indicating that the model fits the data well.
+
+-   **R-squared (0.9291)** and **Adjusted R-squared (0.9266)**: These values indicate that approximately **93%** of the variance in the dependent variable (`WDURHR`) is explained by the model. This is a very strong fit, suggesting that the predictors included in the model are highly informative.
+
+-   **F-statistic (374.9)**: The high F-statistic with a **p-value \< 2.2e-16** indicates that the model is highly significant and that at least some of the predictors are contributing meaningfully to explaining the variability in
+
+## 4.4 Commute Mode Choice (MNL Model)
+
+**Multinomial Logistic Regression (MNL)** is a statistical model used for predicting categorical outcomes with more than two possible categories. In the context of **commute mode choice** (Auto, Bus, and Active Mode), the MNL model estimates the probability of an individual choosing one of these modes based on predictor variables.
+
+The model works by comparing each mode against a reference category (active mode in this project) and estimating the log-odds of choosing one mode over the reference, given the values of the predictors. These predictors are classified into two categories:
+
+1.  **Demographic Factors**: Variables such as **Age**, **Gender**, **Employment Status**, **Education**, **Income Level**, **Driving License**, **Transit Pass**, **Vehicle Ownership**, **Home Ownership**, and **Children** influence an individual's commute choice by capturing socio-economic characteristics and lifestyle factors that may affect preferences for certain modes.
+
+2.  **Built Environment Factors**: Variables such as **Nearest Restaurant**, **Nearest Mall**, **Nearest School**, **Nearest CBD (Central Business District)**, **Nearest Grocery Store**, and **Land Use Index** reflect how proximity to key amenities and the overall urban environment affect travel mode choice. People are more likely to choose modes that align with their proximity to services, public transport options, and the convenience of travel.
+
+By modeling these variables, MNL helps in understanding how demographic and environmental factors influence decisions among multiple commute modes, providing insights for urban planning and transportation policy.
+
+### 4.4.1 Mode Choice Model (No Treatment for Unbalanced Data)
+
+```{r}
+# Load necessary libraries
+library(readxl)
+library(dplyr)
+library(nnet)
+library(broom)       # For tidy model output
+library(kableExtra)  # For nice table formatting
+library(MASS)        # For stepAIC function
+
+# Explicitly specify dplyr's select function
+select <- dplyr::select
+
+# Load and prepare data
+data <- read_excel("C:/Onedrive_Sync/OneDrive - Dalhousie University/PhD Dal/Coursework/Data Analysis/Project/Analysis Files/WorkMode.xlsx")
+
+# Convert categorical variables to factors
+categorical_vars <- c("Gender", "AGEGROUP", "EDULEVEL", "EMP", "INCOMELEVEL", "LICENSE", "TPASS", 
+                      "VEHNUMLVL", "BICYCLELVL", "HOMEOWNER", "LOCYRLVL", "MODE", "HHMEMLVL", "HHHASCHLD", 
+                      "HOMELOC", "BUS5KM")
+
+data <- data %>%
+  mutate(across(all_of(categorical_vars), as.factor)) %>%
+  na.omit()
+
+# Set reference level for MODE (response variable)
+data$MODE <- relevel(data$MODE, ref = "3")  # Setting level 3 as reference
+
+# Fit initial null model (intercept only)
+null_model <- multinom(MODE ~ 1, data = data)
+
+# Fit full model with all predictors
+full_model <- multinom(MODE ~ Gender + AGEGROUP + 
+                         EDULEVEL + EMP + INCOMELEVEL + LICENSE + TPASS + VEHNUMLVL + BICYCLELVL + 
+                         HOMEOWNER + LOCYRLVL + HHMEMLVL + HHHASCHLD + TRIPS + HOMELOC + BUS5KM + 
+                         NEARMALLKM + NEARSCHKM + NEARGROCKM + NEARCBDKM + NEARRESTAUKM + LANDUSE,
+                       data = data,
+                       maxit = 1000)
+
+# Perform stepwise AIC selection (forward only) - suppress intermediate output
+invisible(capture.output(
+  step_model <- stepAIC(null_model, 
+                       scope = list(lower = null_model, upper = full_model),
+                       direction = "forward",
+                       trace = FALSE)  # Set trace=FALSE to hide selection process
+))
+
+# Create a tidy table of results from the final stepwise model
+results_table <- tidy(step_model, conf.int = TRUE) %>%
+  mutate(
+    t.stat = estimate / std.error,
+    p.value = 2 * (1 - pnorm(abs(t.stat))),
+    significance = case_when(
+      p.value < 0.001 ~ "***",
+      p.value < 0.01 ~ "**",
+      p.value < 0.05 ~ "*",
+      p.value < 0.1 ~ ".",
+      TRUE ~ ""
+    )
+  ) %>%
+  select(
+    y.level, term, 
+    Coefficient = estimate, 
+    `Std. Error` = std.error,
+    `t-stat` = t.stat,
+    `p-value` = p.value,
+    significance
+  )
+
+# Print the formatted table of final model results
+results_table %>%
+  kable(digits = 3, align = c("l", "l", "r", "r", "r", "r", "c")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), 
+                full_width = FALSE) %>%
+  pack_rows(index = table(results_table$y.level)) %>%
+  add_header_above(c(" " = 2, "Final Stepwise Multinomial Logit Model Results" = 5)) %>%
+  footnote(
+    general = "Reference category for MODE is level 3",
+    symbol = c("*** p < 0.001; ** p < 0.01; * p < 0.05; . p < 0.1")
+  )
+
+# Model fit statistics for final model
+cat("\nFinal Model Fit Statistics:\n")
+cat("AIC:", AIC(step_model), "\n")
+cat("BIC:", BIC(step_model), "\n")
+cat("Log-Likelihood:", logLik(step_model), "\n")
+
+# McFadden's pseudo R-squared for final model
+mcfadden_r2 <- 1 - (logLik(step_model)/logLik(null_model))
+cat("McFadden's R-squared:", mcfadden_r2, "\n")
+
+# Confusion matrix for final model
+predicted_classes <- predict(step_model)
+confusion_matrix <- table(Actual = data$MODE, Predicted = predicted_classes)
+cat("\nConfusion Matrix for Final Model:\n")
+print(confusion_matrix)
+
+# Calculate accuracy for final model
+accuracy <- sum(diag(confusion_matrix))/sum(confusion_matrix)
+cat("\nClassification Accuracy:", round(accuracy, 3), "\n")
+```
+
+### 4.4.2 Mode Choice Model (Treatment for Unbalanced Data)
+
+In this project, **Random Replicaton** was used to address the issue of **class imbalance** in the mode choice data, where **85.8%** of the responses were for **Auto**, **4.6%** for **Transit**, and **9.8%** for **Active Mode**. This imbalance caused the model to be biased towards the majority class (Auto), making it difficult to accurately predict the minority classes (Transit and Active Mode). By applying **Random Replication**, synthetic samples were generated for the minority classes, helping to balance the dataset and improve the model’s ability to distinguish between the different modes of transportation. This approach enhanced the model's performance by ensuring more accurate predictions for all three commute modes, leading to better generalization and fairness in the model. The code, model output, and the model fit statistics have been presented below:
+
+```{r}
+# Load necessary libraries
+library(readxl)        # For reading Excel files
+library(dplyr)         # For data manipulation
+library(nnet)          # For multinomial logistic regression
+library(broom)         # For tidy model output
+library(kableExtra)    # For nice table formatting
+library(MASS)          # For stepAIC function
+library(ggplot2)       # For visualizations
+
+# Load and prepare data
+data <- read_excel("C:/Onedrive_Sync/OneDrive - Dalhousie University/PhD Dal/Coursework/Data Analysis/Project/Analysis Files/WorkMode.xlsx")
+
+# Convert categorical variables to factors
+categorical_vars <- c("Gender", "AGEGROUP", "EDULEVEL", "EMP", "INCOMELEVEL", "LICENSE", "TPASS", 
+                      "VEHNUMLVL", "BICYCLELVL", "HOMEOWNER", "LOCYRLVL", "MODE", "HHMEMLVL", "HHHASCHLD", 
+                      "HOMELOC", "BUS5KM")
+
+data <- data %>%
+  mutate(across(all_of(categorical_vars), as.factor)) %>%
+  na.omit()
+
+# Check initial class distribution
+cat("Original class distribution:\n")
+print(table(data$MODE))
+
+# Plot original class distribution
+ggplot(data, aes(x = MODE)) + 
+  geom_bar() +
+  labs(title = "Original Class Distribution", x = "Mode Choice", y = "Count")
+
+# 1. Simple Oversampling (Random Replication) ----------------------------
+
+# Set target size for each class (desired number of samples, e.g., 333)
+target_size <- 333
+
+# Initialize balanced dataset
+balanced_data <- data.frame()
+
+# Apply oversampling for each class
+set.seed(123)
+for (class in levels(data$MODE)) {
+  current_class <- data %>% filter(MODE == class)
+  current_count <- nrow(current_class)
+  
+  if (current_count < target_size) {
+    # Calculate how many samples are needed to reach target_size
+    needed_samples <- target_size - current_count
+    oversampled_class <- current_class[sample(1:current_count, size = needed_samples, replace = TRUE), ]
+    
+    # Combine with original class
+    balanced_class <- rbind(current_class, oversampled_class)
+  } else {
+    # For majority class, just take a sample of size target_size
+    balanced_class <- current_class %>%
+      sample_n(size = target_size, replace = FALSE)
+  }
+  
+  balanced_data <- rbind(balanced_data, balanced_class)
+}
+
+# Verify balanced class distribution
+cat("\nClass distribution after oversampling:\n")
+print(table(balanced_data$MODE))
+
+# Plot balanced class distribution
+ggplot(balanced_data, aes(x = MODE)) + 
+  geom_bar() +
+  labs(title = "Balanced Class Distribution After Oversampling", x = "Mode Choice", y = "Count")
+
+# 2. Model Development ----------------------------------------------------
+balanced_data$MODE <- relevel(balanced_data$MODE, ref = "3")
+
+# Fit initial null model
+null_model <- multinom(MODE ~ 1, data = balanced_data, trace = FALSE)
+
+# Fit full model with carefully selected predictors
+full_model <- multinom(MODE ~ Gender + AGEGROUP + EDULEVEL + EMP + 
+                         INCOMELEVEL + LICENSE + VEHNUMLVL + HOMELOC + 
+                         TRIPS + NEARCBDKM,
+                       data = balanced_data,
+                       maxit = 1000,
+                       trace = FALSE)
+
+# Verify convergence
+if(full_model$convergence != 0) {
+  full_model <- multinom(formula(full_model), data = balanced_data, 
+                         maxit = 5000, trace = FALSE)
+}
+
+# 3. Stepwise Selection ---------------------------------------------------
+safe_scope <- list(
+  lower = formula(null_model),
+  upper = formula(full_model)
+)
+
+step_model <- tryCatch({
+  stepAIC(null_model, 
+          scope = safe_scope,
+          direction = "forward",
+          trace = FALSE)
+}, error = function(e) {
+  return(full_model)
+})
+
+# 4. Model Evaluation -----------------------------------------------------
+results_table <- broom::tidy(step_model, conf.int = TRUE) %>%
+  mutate(
+    t.stat = estimate / std.error,
+    p.value = 2 * (1 - pnorm(abs(t.stat))),
+    significance = case_when(
+      p.value < 0.001 ~ "***",
+      p.value < 0.01 ~ "**",
+      p.value < 0.05 ~ "*",
+      p.value < 0.1 ~ ".",
+      TRUE ~ ""
+    ),
+    odds.ratio = exp(estimate)
+  ) %>% 
+  select(
+    y.level, term, 
+    Coefficient = estimate, 
+    `Std. Error` = std.error,
+    `Odds Ratio` = odds.ratio,
+    `t-stat` = t.stat,
+    `p-value` = p.value,
+    significance
+  )
+
+# Print results
+results_table %>%
+  kable(digits = 3, align = c("l", "l", "r", "r", "r", "r", "r", "c")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), 
+                full_width = FALSE) %>%
+  pack_rows(index = table(results_table$y.level)) %>%
+  add_header_above(c(" " = 2, "Stepwise Multinomial Logit Results" = 6)) %>%
+  footnote(
+    general = "Reference category for MODE is level 3",
+    symbol = c("*** p < 0.001; ** p < 0.01; * p < 0.05; . p < 0.1")
+  )
+
+# Model statistics
+cat("\nFinal Model Fit Statistics:\n")
+cat("AIC:", AIC(step_model), "\n")
+cat("BIC:", BIC(step_model), "\n")
+cat("Log-Likelihood:", logLik(step_model), "\n")
+mcfadden_r2 <- 1 - (logLik(step_model)/logLik(null_model))
+cat("McFadden's R-squared:", mcfadden_r2, "\n")
+
+# Confusion matrix
+predicted_classes <- predict(step_model)
+confusion_matrix <- table(Actual = balanced_data$MODE, Predicted = predicted_classes)
+cat("\nConfusion Matrix:\n")
+print(confusion_matrix)
+cat("\nOverall Accuracy:", mean(predicted_classes == balanced_data$MODE), "\n")
+
+# Save results
+saveRDS(list(
+  data = balanced_data,
+  models = list(null = null_model, full = full_model, final = step_model),
+  results = results_table,
+  confusion = confusion_matrix
+), "mode_choice_results.rds")
+
+```
+
+**Comparison between the Balanced and Unbalanced Model:**
+
+While the overall accuracy of the balanced model is lower, the prediction accuracy of the underrepresented transportation modes increase significantly- 53.7% from 7.1% for Class 2 (transit), and 64.1% from 62.9% for active mode.
+
+# 5. Results
+
+## 5.1 Work Duration Model Results
+
+![](images/clipboard-2670588413.png)
+
+### **Summary:**
+
+-   **Highly Significant** (p-value \< 0.001): CHOREHR, RECHR, OTHERHR, HOMEHR, PBHR, TPASS1, TRIPS
+
+-   **Moderately Significant** (p-value \< 0.1): HOMEOWNER2
+
+-   **Not Significant**: EDULEVEL2, EDULEVEL3, NEARMALLKM, NEARCBDKM
+
+### **Interpretation**:
+
+-   Time spent on activities like **chores, recreation, home activities**, and **physical activity** is negatively associated with **work duration**, meaning as people spend more time on these activities, their work hours tend to decrease.
+
+-   **Having a transit pass** also significantly reduces work duration, possibly due to not having a flexible working environment and tendency to align with bus's schedule.
+
+-   **Daily total trips** also show a negative association with work duration, indicating that more frequent trips might be linked to shorter working hours.
+
+-   **Education level** and **distance to nearest amenities (mall, CBD)** do not have strong or significant effects on work duration in this model.
+
+### Interpretation of the Model Co-efficients:
+
+-   **CHOREHR**: Each additional hour spent on chores reduces work duration by **0.938 hours** (highly significant, p \< 2e-16).
+
+<!-- -->
+
+-   **RECHR**: Each additional hour spent on recreation reduces work duration by **0.886 hours** (highly significant, p \< 2e-16).
+
+<!-- -->
+
+-   **OTHERHR**: Each additional hour spent on other activities reduces work duration by **0.906 hours** (significant, p \< 2e-16).
+
+<!-- -->
+
+-   **HOMEHR**: Each additional hour spent at home reduces work duration by **0.914 hours** (highly significant, p \< 2e-16).
+
+<!-- -->
+
+-   **PBHR**: Each additional hour spent on personal business reduces work duration by **0.908 hours** (significant, p \< 2e-16).
+
+<!-- -->
+
+-   **EDULEVEL2**: Medium education level has a **marginal effect** on work duration (not significant, p = 0.135).
+
+<!-- -->
+
+-   **EDULEVEL3**: Higher education level has **no significant effect** on work duration (p = 0.971).
+
+<!-- -->
+
+-   **TPASS1**: Having a transit pass reduces work duration by **0.3 hours** (significant, p = 0.000547).
+
+<!-- -->
+
+-   **HOMEOWNER2**: Rentership increases work duration by **0.117 hours**, but the effect is **borderline significant** (p = 0.0609).
+
+<!-- -->
+
+-   **TRIPS**: Each additional trip reduces work duration by **0.053 hours** (significant, p = 8.89e-05).
+
+<!-- -->
+
+-   **NEARMALLKM**: Greater distance to the nearest mall slightly reduces work duration, but the effect is **not significant** (p = 0.157).
+
+<!-- -->
+
+-   **NEARCBDKM**: Greater distance to the nearest Central Business District (CBD) slightly increases work duration, but the effect is **not significant** (p = 0.135).
+
+## 5.2 Mode Choice Model Results
+
+![](images/Screenshot_16-4-2025_18454_localhost.jpeg)
+
+### **Key Findings:**
+
+-   **Mode 1 (Auto)** is more likely to be chosen over **Active Mode** for individuals with a driving license, higher vehicle ownership, higher income, middle aged, male and those living in suburban or rural areas.
+
+-   Interpretation of the Model Co-efficients:
+
+    1.  **HOMELOC2**: Living in Home Location 2 increases the odds of choosing Auto by 3.15 times (p-value \< 0.001).
+    2.  **HOMELOC3**: Living in Home Location 3 strongly increases the likelihood of choosing Auto, with odds of 1113423.652 (p-value \< 0.001).
+    3.  **LICENSE1**: Having a driving license increases the odds of choosing Auto by 1.206 times, but the effect is not significant (p = 0.690).
+    4.  **AGEGROUP2**: Older individuals (Age group 2) are less likely to choose Auto, with a 0.444 decrease in the odds (p = 0.083).
+    5.  **NEARCBDKM**: As distance to the nearest CBD increases, the odds of choosing Auto increases by 1.306 times (p-value \< 0.001).
+    6.  **EMP2**: Employment status category 2 increases the odds of choosing Auto by 4.069 times (p-value = 0.008).
+    7.  **EMP3**: Employment status category 3 significantly increases the odds of choosing Auto by 5.905 times (p-value \< 0.001).
+    8.  **VEHNUMLVL1**: Having one vehicle increases the odds of choosing Auto by 4.065 times (p-value = 0.001).
+    9.  **VEHNUMLVL2**: Having two vehicles increases the odds of choosing Auto by 7.126 times (p-value \< 0.001).
+    10. **VEHNUMLVL3**: Having three vehicles increases the odds of choosing Auto by 8.472 times (p-value \< 0.001).
+
+![](images/Screenshot_16-4-2025_18533_localhost-01.jpeg)
+
+### **Key Findings:**
+
+-   **Mode 2 (Transit)** is more likely to be chosen over **Active Mode** for individuals with higher vehicle ownership, low income, urban/suburban dwellers, retirees, and non-license owners.
+
+-   Model Coefficients:
+
+<!-- -->
+
+-   **Intercept**: When all predictors are at baseline, the log-odds of choosing Transit over Active Mode is 2.213, indicating a preference for Transit when no other factors are considered.
+
+<!-- -->
+
+-   **HOMELOC3**: Living in Rural location significantly decreases the likelihood of choosing Transit over Active Mode, with an odds ratio of 0.016 (p-value \< 0.001).
+
+<!-- -->
+
+-   **LICENSE1**: Having a driving license decreases the odds of choosing Transit over Active Mode by 0.233 times (p-value \< 0.001).
+
+<!-- -->
+
+-   **AGEGROUP3**: Middle aged individuals (35-50) are less likely to choose Transit over Active Mode, with a 0.288 decrease in odds (p = 0.003).
+
+<!-- -->
+
+-   **NEARCBDKM**: As the distance to the nearest CBD increases, the odds of choosing Transit over Active Mode increases by 1.348 times (p-value \< 0.001).
+
+<!-- -->
+
+-   **EMP3**: Being a retiree significantly increases the odds of choosing Transit by 4.822 times (p-value \< 0.001).
+
+<!-- -->
+
+-   **VEHNUMLVL2**: Having two vehicles increases the odds of choosing Transit over Active Mode by 2.819 times (p = 0.002).
+
+<!-- -->
+
+-   **VEHNUMLVL3**: Having three vehicles increases the odds of choosing Transit over Active Mode by 2.578 times (p = 0.030).
+
+<!-- -->
+
+-   **INCOMELEVEL4**: Higher-income individuals (\>100K/year) are less likely to choose Transit over Active Mode, with odds decreasing by 0.220 times (p = 0.019).
+
+<!-- -->
+
+-   **Gender2**: Females are less likely to choose Transit over Active Mode, with odds decreasing by 0.533 times (p = 0.002).
+
+<!-- -->
+
+-   **TRIPS**: More total trips per day decrease the likelihood of choosing Transit over Active Mode, with odds decreasing by 0.872 times (p = 0.009).
+
+# 6. Conclusions
+
+This research provides valuable insights into the complex relationships between sociodemographic factors, commute patterns, and the built environment, and their influence on daily work duration and transportation mode choice. By utilizing a variety of statistical models, including Ordinary Least Squares (OLS) regression, Generalized Linear Models (GLM), Iteratively Reweighted Least Squares (IRLS) regression, and Multinomial Logistic Regression (MNL), we have explored how different factors shape individuals' work habits and their preferred transportation modes.
+
+The analysis reveals that sociodemographic factors such as age, gender, income, and vehicle ownership play significant roles in determining both the number of hours individuals spend working each day and their choice of commute mode. For instance, higher vehicle ownership, income, and middle age were strongly associated with a preference for private auto use over active modes. Conversely, lower income, the lack of a driving license, and living in urban or suburban areas increased the likelihood of using transit over active modes. Additionally, factors such as home location, employment status, and proximity to essential services (e.g., the nearest CBD or mall) were critical determinants of mode choice.
+
+Moreover, this research underscores the influence of time-use patterns, such as time spent on chores, recreation, and other personal activities, which were found to negatively affect work duration. As individuals allocate more time to non-work activities, their total work hours tend to decrease, further shaping daily travel behavior.
+
+From a transportation planning and policy perspective, these findings emphasize the need for tailored solutions that accommodate diverse work patterns and travel behaviors. Policies that promote flexible work hours, improved public transit accessibility, and better integration of the built environment can help mitigate congestion and reduce transportation disparities across different population segments. Future studies should further investigate these relationships to refine urban transportation policies and enhance the efficiency and equity of transport systems.
+
+# References
+
+Boarnet, M. G., & Crane, R. (2001). *Travel by design: The influence of urban form on travel*. Oxford University Press.
+
+Cervero, R., & Kockelman, K. (1997). Travel demand and the 3Ds: Density, diversity, and design. *Transportation research part D: Transport and environment*, *2*(3), 199-219.
+
+Fan, J. X., Wen, M., & Kowaleski‐Jones, L. (2015). Sociodemographic and environmental correlates of active commuting in rural America. The Journal of Rural Health, 31(2), 176–185.
+
+Givoni, M., & Rietveld, P. (2014). Do cities deserve more railway stations? The choice of a departure railway station in a multiple-station region. *Journal of Transport Geography*, *36*, 89-97.
+
+Graham, D. J., & Glaister, S. (2004). Road traffic demand elasticity estimates: a review. *Transport reviews*, *24*(3), 261-274.
+
+Hochschild, A., & Machung, A. (2012). *The second shift: Working families and the revolution at home*. Penguin.
+
+Wachter, T. V. (2020). The persistent effects of initial labor market conditions for young adults and their sources. *Journal of Economic Perspectives*, *34*(4), 168-194.
+
+**AI Acknowlegement:**
+
+We have carefully reviewed and modified the AI-generated code to ensure it aligned with the project requirements and our understanding of the problems.
